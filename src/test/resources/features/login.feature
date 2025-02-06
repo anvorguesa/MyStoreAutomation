@@ -13,4 +13,4 @@ Característica: Login
       | email                      | password         | mensaje                |
       | diegon_7@hotmail.com       | 2016137405Arce  | Diego Axel Arce Muñoz   |
       | usuario_invalido@mail.com  | clave123        | Error de autenticación. |
-      | srliposa@gmail.com         | 2016137405Arce  | Alex Diego Arce Muñoz   |A
+      | srliposa@gmail.com         | 2016137405Arce  | Alex Diego Arce Muñoz   |
