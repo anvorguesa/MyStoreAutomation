@@ -29,34 +29,54 @@ public class LoginStepsDef {
     @Cuando("me logueo con mi email {string} y clave {string}")
     public void me_logueo_con_mi_email_y_clave(String email, String password) {
         loginSteps = new LoginSteps(driver);
-        loginSteps.typeEmail(email);  //
+        loginSteps.typeEmail(email);
         loginSteps.typePassword(password);
         loginSteps.login();
     }
 
+    @Entonces("valido la autenticación con el mensaje {string}")
+    public void valido_la_autenticación_con_el_mensaje(String mensajeEsperado) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(7));
+
+        try {
+            // Validar si aparece el nombre del usuario en el header
+            WebElement usuarioNombreElemento = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='_desktop_user_info']/div/a[2]/span"))
+            );
+            String nombreUsuarioObtenido = usuarioNombreElemento.getText().trim();
+
+            System.out.println("Nombre de usuario obtenido: " + nombreUsuarioObtenido);
+            System.out.println("Nombre de usuario esperado: " + mensajeEsperado);
+
+            Assertions.assertEquals(mensajeEsperado, nombreUsuarioObtenido, "No se encontró el nombre de usuario correctamente.");
+        } catch (Exception e) {
+            // Si no encuentra el nombre del usuario, validar el mensaje de error de autenticación
+            WebElement mensajeError = wait.until(
+                    ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id='content']/section/div/ul/li"))
+            );
+            String mensajeErrorTexto = mensajeError.getText().trim();
+
+            System.out.println("Mensaje de error obtenido: " + mensajeErrorTexto);
+            System.out.println("Mensaje de error esperado: " + mensajeEsperado);
+
+            Assertions.assertEquals(mensajeEsperado, mensajeErrorTexto, "El mensaje de error no coincide.");
+        }
+    }
 
     @Entonces("valido que debería aparecer el título de {string}")
     public void valido_que_debería_aparecer_el_título_de(String tituloEsperado) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5)); // Espera máxima de 10 segundos
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
 
-
-        WebElement tituloElemento = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"content\"]/section[1]/h2")));
-
+        WebElement tituloElemento = wait.until(
+                ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[@id=\"content\"]/section[1]/h2"))
+        );
 
         String tituloActual = tituloElemento.getText().trim();
 
-        // Mostrar en consola el título esperado y el obtenido
         System.out.println("Título esperado: " + tituloEsperado);
         System.out.println("Título actual en la UI: " + tituloActual);
 
-        // Validar que el título en la UI coincide con el esperado
         Assertions.assertEquals(tituloEsperado, tituloActual, "El título de la tienda no coincide.");
-    }
-
-    @Entonces("también valido que al menos exista un producto en la tienda")
-    public void también_valido_que_al_menos_exista_un_producto_en_la_tienda() {
-        inventorySteps = new InventorySteps(driver);
-        Assertions.assertTrue(inventorySteps.validateProductExistence(), "No se encontraron productos en la tienda.");
     }
 
 }
